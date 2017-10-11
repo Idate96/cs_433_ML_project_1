@@ -1,0 +1,8 @@
+
+.DS_Store
+.gitignore
+dataset/sample-submission.csv
+dataset/test.csv
+dataset/train.csv
+
+
