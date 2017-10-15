@@ -5,13 +5,16 @@ import numpy as np
 from torch.autograd import Variable
 from torch import nn
 import torch.nn.functional as f
-from utils import dataloader, standardize, split_data
+from src.utils import dataloader, standardize, split_data, build_polynomial
 
 x, y = dataloader(mode='train', reduced=False)
 x = standardize(x)
 train_dataset, test_dataset = split_data(x, y, ratio=0.9)
 test_data, test_target = test_dataset
 train_data, train_target = train_dataset
+test_data = build_polynomial(test_data)
+train_data = build_polynomial(train_data)
+num_features = np.shape(train_data)[1]
 
 
 train = torch.utils.data.TensorDataset(torch.from_numpy(train_data).type(torch.FloatTensor),
@@ -29,9 +32,9 @@ class SimpleNN(torch.nn.Module):
         self.load_weights = load_weights
         self.num_epochs = num_epochs
         # architecture
-        self.fc_1 = nn.Linear(30, 256)
-        self.fc_2 = nn.Linear(256, 256)
-        self.fc_3 = nn.Linear(256, 2)
+        self.fc_1 = nn.Linear(num_features, 512)
+        self.fc_2 = nn.Linear(512, 512)
+        self.fc_3 = nn.Linear(512, 2)
 
     def forward(self, x):
         x = f.relu(self.fc_1(x))

@@ -1,10 +1,25 @@
 import numpy as np
 
+def xavier_init(size):
+    var = 2/(np.sum(size))
+    return var * np.random.randn(*size)
+
+def adam(theta, m, v, beta_1, beta_2, learning_rate,  gradient, iter_num):
+    m = (beta_1 * m + (1 - beta_1) * gradient)/(1-beta_1**iter_num)
+    v = (beta_2 * v + (1 - beta_2) * gradient**2)/(1-beta_2**iter_num)
+    return theta - learning_rate*m/(v**0.5 + 10**-8), m, v
 
 
-def dataloader(mode= 'train', reduced=False):
-    table = np.genfromtxt('dataset/' + mode + '.csv', dtype=float, delimiter=',', skip_header=1,
-                          converters={1: lambda x: float(x == b's')})
+def dataloader(mode='train', reduced=False):
+    print("Loading data ...")
+    file_name = '../dataset/' + mode + '.csv'
+    with open(file_name) as f:
+        first_line = f.readline()
+        columns_headears = first_line.split(',')
+        indeces_wo_phi = [idx for idx in range(30) if 'phi' not in columns_headears[idx]]
+
+    table = np.genfromtxt(file_name, dtype=float, delimiter=',', skip_header=1,
+                          converters={1: lambda x: float(x == b's')}, usecols=indeces_wo_phi)
 
     if reduced:
         features = table[:10000, 2:]
@@ -12,13 +27,17 @@ def dataloader(mode= 'train', reduced=False):
     else:
         features = table[:, 2:]
         labels = table[:, 1]
+    print("Data extracted.")
     if mode == 'train':
         return features, labels
     else:
         return features
 
+def sigmoid(x):
+    return 1/(1 + np.exp(-x))
+
 def standardize(x):
-    x = (x-np.mean(x, axis=0))/(np.std(x, axis=0))
+    x = (x-np.mean(x, axis=0))/(np.std(x, axis=0) + 10**-8)
     return x
 
 def split_data(x, y, ratio, seed=1):
@@ -64,6 +83,24 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
+
+def build_polynomial(x):
+    base_mixed = np.zeros((np.shape(x)[0],int(np.shape(x)[1]*(np.shape(x)[1]-1)/2)))
+    # base_mixed_cube = np.zeros((np.shape(x)[0], int(np.shape(x)[1]**2)))
+    bias = np.ones(np.shape(x)[0])
+    counter = 0
+    # gaussian_base = np.zeros((np.shape(x)[0],int(np.shape(x)[1]*(np.shape(x)[1]-1)/2)))
+    for i in range(np.shape(x)[1]):
+        for j in range(i):
+            base_mixed[:, counter] = x[:, i] * x[:, j]
+            # gaussian_base[:, counter] = np.exp(-(x[:, i] - x[:, j])**2/(2*0.25))
+            counter += 1
+    # for i in range(np.shape(x)[1]):
+    #     for j in range(np.shape(x)[1]):
+    #         base_mixed_cube[:, counter] = x[:, i]**2 * x[:, j]
+    #
+    base = np.hstack((bias[:, np.newaxis], x, base_mixed, x**2, x**3))
+    return base
 
 if __name__ == '__main__':
     pass
