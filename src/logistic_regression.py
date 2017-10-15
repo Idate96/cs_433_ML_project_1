@@ -3,7 +3,7 @@ from src.utils import batch_iter, dataloader, split_data, standardize, xavier_in
 import matplotlib.pyplot as plt
 num_epochs = 300
 batch_size = 300
-learning_rate = 10**-3
+learning_rate = 10**-4
 
 x, y = dataloader(mode='train', reduced=False)
 x = standardize(x)
@@ -57,8 +57,8 @@ def gradient_mse_reg(weights, x, target, lambda_ = 0):
     g_x = sigmoid(x @ weights)
     return x.T @ ((g_x - target) * g_x * (1 - g_x)) + lambda_ * weights
 
-def loss_ce(weights, x, target, lambda_):
-    g_x = sigmoid(x @ weights)
+def loss_ce(weights, x, target, lambda_=0):
+    g_x = np.clip(sigmoid(x @ weights), 0.0001, 0.9999)
     loss = -1/np.shape(x)[0] * np.sum(target * np.log(g_x) + (1 - target)*np.log(1 - g_x))  + \
          lambda_ * weights.T @ weights
     return loss
@@ -138,7 +138,7 @@ def plot(x, train_loss, test_loss):
 
 
 if __name__ == '__main__':
-    train_logistic_regression(loss_mse_reg, gradient_mse_reg, lambda_= 0.01)
+    train_logistic_regression(loss_ce, gradient_ce, lambda_= 0.01)
     # lambdas, best_weigths, best_accurary, test_losses, train_losses, \
     # best_combination = find_best_lambda(loss_mse_reg, gradient_mse_reg)
     # plot(lambdas, train_losses, test_losses)
