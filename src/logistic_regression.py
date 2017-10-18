@@ -138,7 +138,7 @@ def plot(x, train_loss, test_loss):
 
 
 if __name__ == '__main__':
-    train_logistic_regression(loss_ce, gradient_ce, lambda_= 0.01)
+    # train_logistic_regression(loss_ce, gradient_ce, lambda_= 0.01)
     # lambdas, best_weigths, best_accurary, test_losses, train_losses, \
     # best_combination = find_best_lambda(loss_mse_reg, gradient_mse_reg)
     # plot(lambdas, train_losses, test_losses)

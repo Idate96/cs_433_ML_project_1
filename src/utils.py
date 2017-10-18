@@ -1,4 +1,28 @@
 import numpy as np
+import csv
+
+def predict_labels(weights, data):
+    """Generates class predictions given weights, and a test data matrix"""
+    y_pred = np.dot(data, weights)
+    y_pred[np.where(y_pred <= 0.5)] = -1
+    y_pred[np.where(y_pred > 0.5)] = 1
+
+    return y_pred
+
+
+def create_csv_submission(ids, y_pred, name):
+    """
+    Creates an output file in csv format for submission to kaggle
+    Arguments: ids (event ids associated with each prediction)
+               y_pred (predicted class labels)
+               name (string name of .csv output file to be created)
+    """
+    with open(name, 'w') as csvfile:
+        fieldnames = ['Id', 'Prediction']
+        writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
+        writer.writeheader()
+        for r1, r2 in zip(ids, y_pred):
+            writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
 def xavier_init(size):
     var = 2/(np.sum(size))
@@ -12,7 +36,7 @@ def adam(theta, m, v, beta_1, beta_2, learning_rate,  gradient, iter_num):
 
 def dataloader(mode='train', reduced=False):
     print("Loading data ...")
-    file_name = '../dataset/' + mode + '.csv'
+    file_name = 'dataset/' + mode + '.csv'
     with open(file_name) as f:
         first_line = f.readline()
         columns_headears = first_line.split(',')
@@ -28,10 +52,17 @@ def dataloader(mode='train', reduced=False):
         features = table[:, 2:]
         labels = table[:, 1]
     print("Data extracted.")
+    indeces = np.arange(np.shape(features)[0])
+    random_indeces = np.random.permutation(indeces)
     if mode == 'train':
-        return features, labels
+        return features[random_indeces], labels[random_indeces]
     else:
-        return features
+        return features[random_indeces]
+
+def randomize_samples(x, y):
+    indeces = np.arange(np.shape(x)[0])
+    random_indeces = np.random.permutation(indeces)
+    return x[random_indeces], y[random_indeces]
 
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
@@ -47,7 +78,7 @@ def split_data(x, y, ratio, seed=1):
     and the rest dedicated to testing
     """
     # set seed
-    np.random.seed(seed)
+    # np.random.seed(seed)
     num_train_samples = int(np.shape(x)[0]*ratio)
     indeces = np.arange(np.shape(x)[0])
     random_indeces = np.random.permutation(indeces)
@@ -55,6 +86,16 @@ def split_data(x, y, ratio, seed=1):
     train_x, train_y = x[train_idx], y[train_idx]
     test_x, test_y = x[test_idx], y[test_idx]
     return (train_x, train_y), (test_x, test_y)
+
+def split_data_k_fold(x, y, begin, k):
+    test_indeces = np.arange(begin*int(np.shape(x)[0]/k), (begin+1)*int(np.shape(x)[0]/k))
+    train_indeces = np.asarray(list(range(0, begin*int(np.shape(x)[0]/k))) \
+                    + list(range((begin+1)*int(np.shape(x)[0]/k), np.shape(x)[0])))
+    train_x, train_y = x[train_indeces], y[train_indeces]
+    test_x, test_y = x[test_indeces], y[test_indeces]
+    return (train_x, train_y), (test_x, test_y)
+
+
 
 
 
