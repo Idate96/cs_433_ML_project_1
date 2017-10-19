@@ -181,6 +181,7 @@ class EnsembleClassifiers(object):
     def load_weights(self):
         with open(r'config/' + self.label + '.p', "rb") as file:
             weights = pickle.load(file)
+        print(np.shape(weights))
         for i, classifier in enumerate(self.classifiers):
             classifier.weights = weights[i]
 
@@ -262,14 +263,17 @@ if __name__ == '__main__':
     config = Config(batch_size=200, num_epochs=200, learning_rate=5*10**-4,
                     lambda_= 0.00316227766017,
                     mode='train')
-    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 50, LogisticClassifier,
+    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 10, LogisticClassifier,
                                    label='ensemble_50')
-    ensemble.train()
+    # ensemble.train()
     # ensemble.save()
-    # ensemble.load_weights()
-    output = ensemble(build_polynomial(x_test))
+    ensemble.load_weights()
+    # output = ensemble(build_polynomial(x_test))
     # # print(output)
-    predictions = ensemble.predict(ensemble(build_polynomial(x_test)))
+    predictions = ensemble.predict(ensemble(build_polynomial(x)))
+    y[np.where(y == 0)] = -1
+    accuracy = np.sum(predictions == y)/np.shape(x)[0]
+    print("final accuracy : ", accuracy)
     # # print(predictions)
     create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions,
                                                                 'dataset/submission_01.csv')
