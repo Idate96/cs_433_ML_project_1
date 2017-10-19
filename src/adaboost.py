@@ -74,14 +74,15 @@ class LogisticClassifier(object):
         for epoch in range(self.config.num_epochs):
             if epoch % 50 == 0:
                 reduction_factor *= 0.5
-            # for batch_label, batch_input in batch_iter(
-            #         self.train_labels, self.train_data, self.config.batch_size, num_batches=num_batches):
-            #     self.weights = self.sdg(self.weights, batch_input, batch_label)
-            for idx in range(num_batches):
-                batch_input = self.train_data[idx*self.config.batch_size: (idx + 1)*self.config.batch_size]
-                batch_label = self.train_labels[idx*self.config.batch_size: (idx + 1)*self.config.batch_size]
+            for batch_label, batch_input in batch_iter(
+                    self.train_labels, self.train_data, self.config.batch_size, num_batches=num_batches):
                 self.weights = self.sdg(self.weights, batch_input, batch_label,
                                         self.config.learning_rate*reduction_factor)
+            # for idx in range(num_batches):
+            #     batch_input = self.train_data[idx*self.config.batch_size: (idx + 1)*self.config.batch_size]
+            #     batch_label = self.train_labels[idx*self.config.batch_size: (idx + 1)*self.config.batch_size]
+            #     self.weights = self.sdg(self.weights, batch_input, batch_label,
+            #                             self.config.learning_rate*reduction_factor)
 
             self.train_loss = self.loss(self(self.train_data), self.train_labels)
             if epoch % show_every == 0 or epoch == self.config.num_epochs - 1:
@@ -140,8 +141,9 @@ class EnsembleClassifiers(object):
                 train_set, test_set = split_data_k_fold(x, y, i % 10, k=10)
                 self.classifiers.append(classifier(config, train_set, test_set))
             else:
-                x, y = randomize_samples(x, y)
-                self.classifiers.append(classifier(config, train_set=(x, y)))
+                # x, y = randomize_samples(x, y)
+                self.classifiers.append(classifier(config, train_set=(self.train_data,
+                                                                      self.train_label)))
         self.classifier_weights = np.ones(num_classifiers)
         self.test_predictions = None
         self.label = label
@@ -251,32 +253,33 @@ def find_best_lambda(model):
 if __name__ == '__main__':
     # find_best_regularizer(EnsembleClassifiers, np.logspace(-3, -2.5, 5))
     x, y = dataloader(mode='train', reduced=False)
-    x_test = dataloader(mode='test', reduced = False)
+    x_test = dataloader(mode='test', reduced=False)
     x = standardize(x)
     x_test = standardize(x_test)
-    # # train_dataset, test_dataset = split_data(x, y, ratio=0.9)
-    # # train_set = (build_polynomial(train_dataset[0]), train_dataset[1])
-    # # test_set = (build_polynomial(test_dataset[0]), test_dataset[1])
-    # # # x = dataloader(mode='test', reduced=False)
-    # # # x = standardize(x)
-    # # # x = build_polynomial(x)
+    # # # train_dataset, test_dataset = split_data(x, y, ratio=0.9)
+    # # # train_set = (build_polynomial(train_dataset[0]), train_dataset[1])
+    # # # test_set = (build_polynomial(test_dataset[0]), test_dataset[1])
+    # # # # x = dataloader(mode='test', reduced=False)
+    # # # # x = standardize(x)
+    # # # # x = build_polynomial(x)
     config = Config(batch_size=200, num_epochs=200, learning_rate=5*10**-4,
-                    lambda_= 0.00316227766017,
+                    lambda_=0.00316227766017,
                     mode='train')
     ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 10, LogisticClassifier,
                                    label='ensemble_50')
-    # ensemble.train()
-    # ensemble.save()
+    ensemble.train()
+    predictions_test = ensemble.predict(ensemble(build_polynomial(x_test)))
+    create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions_test,
+                                                                'dataset/submission_01.csv')
+    ensemble.save()
     ensemble.load_weights()
     # output = ensemble(build_polynomial(x_test))
-    # # print(output)
-    predictions = ensemble.predict(ensemble(build_polynomial(x)))
     y[np.where(y == 0)] = -1
     accuracy = np.sum(predictions == y)/np.shape(x)[0]
     print("final accuracy : ", accuracy)
     # # print(predictions)
-    create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions,
-                                                                'dataset/submission_01.csv')
+    # create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions,
+    #                                                             'dataset/submission_01.csv')
     # # y_test[np.where(y_test) == 0] = -1
     #
     # accuracy = np.sum(ensemble.predict(ensemble(build_polynomial(x))) == y)/np.shape(x)[0]
