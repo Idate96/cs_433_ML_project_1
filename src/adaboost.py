@@ -266,14 +266,14 @@ if __name__ == '__main__':
                     lambda_=0.00316227766017,
                     mode='train')
     ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 10, LogisticClassifier,
-                                   label='ensemble_50')
-    ensemble.train()
+                                   label='ensemble_10')
+    # ensemble.train()
+    ensemble.load_weights()
     predictions_test = ensemble.predict(ensemble(build_polynomial(x_test)))
     create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions_test,
-                                                                'dataset/submission_01.csv')
-    ensemble.save()
-    ensemble.load_weights()
-    # output = ensemble(build_polynomial(x_test))
+                                                                'dataset/submission_03.csv')
+
+    predictions = ensemble.predict(ensemble(build_polynomial(x)))
     y[np.where(y == 0)] = -1
     accuracy = np.sum(predictions == y)/np.shape(x)[0]
     print("final accuracy : ", accuracy)

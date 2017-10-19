@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="051e3967-26e7-4bb3-88a5-b601a6048d74" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/config/ensemble_10.p" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/config/ensemble_50.p" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dataset/submission_01.csv" afterPath="$PROJECT_DIR$/dataset/submission_01.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/adaboost.py" afterPath="$PROJECT_DIR$/src/adaboost.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,7 +17,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/cs_433_ML_project_1$logistic_regression.coverage" NAME="logistic_regression Coverage Results" MODIFIED="1508090182761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/cs_433_ML_project_1$adaboost.coverage" NAME="adaboost Coverage Results" MODIFIED="1508422826903" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/cs_433_ML_project_1$adaboost.coverage" NAME="adaboost Coverage Results" MODIFIED="1508425049220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileColors">
@@ -27,11 +31,41 @@
       <file leaf-file-name="adaboost.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/adaboost.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
-              <caret line="79" column="40" lean-forward="false" selection-start-line="79" selection-start-column="40" selection-end-line="79" selection-end-column="40" />
+            <state relative-caret-position="272">
+              <caret line="269" column="22" lean-forward="true" selection-start-line="269" selection-start-column="22" selection-end-line="269" selection-end-column="22" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="submission_03.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataset/submission_03.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="submission_01.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataset/submission_01.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3847992">
+              <caret line="167304" column="0" lean-forward="false" selection-start-line="167304" selection-start-column="0" selection-end-line="167304" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="submission_00.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataset/submission_00.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2962860">
+              <caret line="128820" column="0" lean-forward="false" selection-start-line="128820" selection-start-column="0" selection-end-line="128820" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -108,6 +142,34 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs_433_ML_project_1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs_433_ML_project_1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dataset" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs_433_ML_project_1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs_433_ML_project_1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -418,16 +480,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/adaboost.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4232">
-          <caret line="189" column="67" lean-forward="false" selection-start-line="189" selection-start-column="67" selection-end-line="189" selection-end-column="67" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/neural_network_torch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="184">
@@ -818,26 +870,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/ensemble_50.p">
+    <entry file="file://$PROJECT_DIR$/config/ensemble_10.p">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/submission_00.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-10106365">
-          <caret line="128820" column="0" lean-forward="false" selection-start-line="128820" selection-start-column="0" selection-end-line="128820" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataset/submission_01.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3846492">
-          <caret line="167304" column="0" lean-forward="false" selection-start-line="167304" selection-start-column="0" selection-end-line="167304" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -862,10 +898,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/submission_00.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2962860">
+          <caret line="128820" column="0" lean-forward="false" selection-start-line="128820" selection-start-column="0" selection-end-line="128820" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/submission_01.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3847992">
+          <caret line="167304" column="0" lean-forward="false" selection-start-line="167304" selection-start-column="0" selection-end-line="167304" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataset/submission_03.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/adaboost.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="79" column="40" lean-forward="false" selection-start-line="79" selection-start-column="40" selection-end-line="79" selection-end-column="40" />
+        <state relative-caret-position="272">
+          <caret line="269" column="22" lean-forward="true" selection-start-line="269" selection-start-column="22" selection-end-line="269" selection-end-column="22" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

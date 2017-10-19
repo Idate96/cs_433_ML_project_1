@@ -52,12 +52,10 @@ def dataloader(mode='train', reduced=False):
         features = table[:, 2:]
         labels = table[:, 1]
     print("Data extracted.")
-    indeces = np.arange(np.shape(features)[0])
-    random_indeces = np.random.permutation(indeces)
     if mode == 'train':
-        return features[random_indeces], labels[random_indeces]
+        return features, labels
     else:
-        return features[random_indeces]
+        return features
 
 def randomize_samples(x, y):
     indeces = np.arange(np.shape(x)[0])
