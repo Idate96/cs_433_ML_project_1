@@ -9,7 +9,6 @@ def predict_labels(weights, data):
 
     return y_pred
 
-
 def create_csv_submission(ids, y_pred, name):
     """
     Creates an output file in csv format for submission to kaggle
@@ -93,10 +92,6 @@ def split_data_k_fold(x, y, begin, k):
     test_x, test_y = x[test_indeces], y[test_indeces]
     return (train_x, train_y), (test_x, test_y)
 
-
-
-
-
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
@@ -138,7 +133,7 @@ def build_polynomial(x):
     #     for j in range(np.shape(x)[1]):
     #         base_mixed_cube[:, counter] = x[:, i]**2 * x[:, j]
     #
-    base = np.hstack((bias[:, np.newaxis], x, base_mixed, x**2, x**3))
+    base = np.hstack((bias[:, np.newaxis], np.log(abs(1+x)), x, base_mixed, x**2, x**3))
     return base
 
 if __name__ == '__main__':

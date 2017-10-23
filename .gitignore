@@ -4,3 +4,6 @@
 dataset/sample-submission.csv
 dataset/test.csv
 dataset/train.csv
+dataset/*
+src/old_models/
+config/
