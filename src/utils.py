@@ -24,7 +24,11 @@ def create_csv_submission(ids, y_pred, name):
             writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
 def dataloader(mode='train', reduced=False):
+<<<<<<< HEAD
     #TODO: erase the reduced feature since it is not used
+=======
+    """Load datasets"""
+>>>>>>> 21a3636a014486ada42b979c3e94de1878fbe7b2
     print("Loading data ...")
     file_name = 'dataset/' + mode + '.csv'
     with open(file_name) as f:
@@ -35,12 +39,8 @@ def dataloader(mode='train', reduced=False):
     table = np.genfromtxt(file_name, dtype=float, delimiter=',', skip_header=1,
                           converters={1: lambda x: float(x == b's')}, usecols=indeces_wo_phi)
 
-    if reduced:
-        features = table[:10000, 2:]
-        labels = table[:10000, 1]
-    else:
-        features = table[:, 2:]
-        labels = table[:, 1]
+    features = table[:, 2:]
+    labels = table[:, 1]
     print("Data extracted.")
     if mode == 'train':
         return features, labels
@@ -56,6 +56,7 @@ def sigmoid(x):
     return 1/(1 + np.exp(-x))
 
 def standardize(x):
+    """sets mean to 0 and std to 1 approx"""
     x = (x-np.mean(x, axis=0))/(np.std(x, axis=0) + 10**-8)
     return x
 
@@ -76,6 +77,10 @@ def split_data(x, y, ratio, seed=1):
     return (train_x, train_y), (test_x, test_y)
 
 def split_data_k_fold(x, y, begin, k):
+    """K fold cross validation.
+    Split the data in 10 parts : 9 are used for training the remaining one for cross validation
+    To be applied 10 times.
+    """
     test_indeces = np.arange(begin*int(np.shape(x)[0]/k), (begin+1)*int(np.shape(x)[0]/k))
     train_indeces = np.asarray(list(range(0, begin*int(np.shape(x)[0]/k))) \
                     + list(range((begin+1)*int(np.shape(x)[0]/k), np.shape(x)[0])))
@@ -110,19 +115,16 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
 
 def build_polynomial(x):
+    """Builds a non linear base out of the original data"""
     base_mixed = np.zeros((np.shape(x)[0],int(np.shape(x)[1]*(np.shape(x)[1]-1)/2)))
-    # base_mixed_cube = np.zeros((np.shape(x)[0], int(np.shape(x)[1]**2)))
+
     bias = np.ones(np.shape(x)[0])
     counter = 0
-    # gaussian_base = np.zeros((np.shape(x)[0],int(np.shape(x)[1]*(np.shape(x)[1]-1)/2)))
+
     for i in range(np.shape(x)[1]):
         for j in range(i):
             base_mixed[:, counter] = x[:, i] * x[:, j]
-            # gaussian_base[:, counter] = np.exp(-(x[:, i] - x[:, j])**2/(2*0.25))
             counter += 1
-    # for i in range(np.shape(x)[1]):
-    #     for j in range(np.shape(x)[1]):
-    #         base_mixed_cube[:, counter] = x[:, i]**2 * x[:, j]
-    #
+
     base = np.hstack((bias[:, np.newaxis], np.log(abs(1+x)), x, base_mixed, x**2, x**3))
     return base
