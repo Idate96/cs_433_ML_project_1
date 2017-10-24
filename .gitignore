@@ -7,3 +7,4 @@ dataset/train.csv
 dataset/*
 src/old_models/
 config/
+.idea/
