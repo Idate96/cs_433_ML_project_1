@@ -10,78 +10,107 @@ sys.path.append(os.getcwd())
 
 
 class Config(object):
-    """Configuration object for the classifiers"""
+    """Contains hyperparameters for the classifiers"""
 
     def __init__(self, batch_size, num_epochs, learning_rate, lambda_, mode='cv'):
         self.batch_size = batch_size
         self.num_epochs = num_epochs
         self.learning_rate = learning_rate
+        # regularization constant
         self.lambda_ = lambda_
+        # mode can be cv or train
         self.mode = mode
 
 
 class LogisticClassifier(object):
     def __init__(self, config, train_set=(None, None), test_set=(None, None), label='0'):
         self.config = config
-        # construct non linear features
         self.train_data, self.train_labels = train_set
         if self.train_data is not None:
             self.weights = np.zeros((np.shape(self.train_data)[1]))
         self.best_weights = None
 
         self.test_data, self.test_labels = test_set
-        # self.weights = xavier_init(np.shape(self.train_data))
+        # to record convergence history
         self.train_losses = []
         self.train_loss = None
         self.test_losses = []
         self.test_loss = None
+
         self.accuracy = 0
         self.best_accuracy = 0
         self.train_accuracy = 0
         self.test_predictions = None
         self.train_predictions = None
+
         self.label = label
 
-    def reset(self):
-        self.train_losses = []
-        self.train_loss = None
-        self.test_losses = []
-        self.test_loss = []
-        self.accuracy = 0
-        self.train_accuracy = 0
-        self.weights = np.zeros((np.shape(self.train_data)[1]))
-        self.test_predictions = None
-
     def __call__(self, input):
+        """Forward pass of the logistic classifier.
+        args:
+            input (np.array) : row matrix of samples
+        """
         return sigmoid(np.dot(input, self.weights))
 
-    def loss(self, output, target, sample_weights=1):
-        loss = 1 / np.shape(target)[0] * np.dot((target - output).T, (
-        sample_weights * (target - output))) + self.config.lambda_ * np.dot(self.weights.T,
-                                                                            self.weights)
+    def loss(self, output, target):
+        """Computes L_2 regularized least squares.
+        args:
+            output (np.array) : result of the classifier
+            target (np.array(int)) : labels of the batch samples
+
+        returns:
+            loss (float) : value of the loss
+
+        """
+        loss = 1 / np.shape(target)[0] * np.dot((target - output).T, (target - output)) \
+               + self.config.lambda_ * np.dot(self.weights.T, self.weights)
         return loss
 
-    def grad(self, data_batch, target_batch, sample_weights=1):
-        return np.dot(data_batch.T, (
-        (self(data_batch) - target_batch) * sample_weights * self(data_batch) * (
-        1 - self(data_batch)))) + self.config.lambda_ * self.weights
+    def grad(self, output, target):
+        """Computes gradient of loss wrt the weights.
+        args:
+            output (np.array) : output of the generator on a batch of inputs
+            target (np.array(int)) : labels of the batch
 
-    def sdg(self, param, data, target, learning_rate):
-        param -= learning_rate * self.grad(data, target)
+        returns:
+            (np.array) : gradient of loss
+        """
+        return np.dot(output.T, (
+            (self(output) - target) * sample_weights * self(output) * (
+        1 - self(output)))) + self.config.lambda_ * self.weights
+
+    def sdg(self, param, output, target, learning_rate):
+        """Optimization routing : Stochastic Gradient Descent
+        args :
+            param (np.array) : parameters to be updated
+            output (np.array) : output of the classifier
+        returns :
+            param (np.array) : updated parameters
+        """
+        param -= learning_rate * self.grad(output, target)
         return param
 
     def train(self, show_every=10):
+        """Trains the classifier.
+
+        Trains the classifier on part of the dataset.
+        """
+        # reduce learning rate
         reduction_factor = 1
         num_batches = int(np.shape(self.train_data)[0] / self.config.batch_size)
         for epoch in range(self.config.num_epochs):
+            # every fifty epoch half the learning rate
             if epoch % 50 == 0:
                 reduction_factor *= 0.5
+
             for batch_label, batch_input in batch_iter(self.train_labels, self.train_data,
                     self.config.batch_size, num_batches=num_batches):
+                # update weights
                 self.weights = self.sdg(self.weights, batch_input, batch_label,
                                         self.config.learning_rate * reduction_factor)
 
             self.train_loss = self.loss(self(self.train_data), self.train_labels)
+            # calculate train set performance
             if epoch % show_every == 0 or epoch == self.config.num_epochs - 1:
                 self.train_predictions = self.predict(self(self.train_data))
                 correct = np.sum(self.train_predictions == self.train_labels)
@@ -94,6 +123,7 @@ class LogisticClassifier(object):
                     self.test()
 
     def test(self):
+        """Tests classifier on test set"""
         output = self(self.test_data)
         self.test_loss = self.loss(output, self.test_labels)
         self.test_losses.append(self.test_loss)
@@ -107,16 +137,20 @@ class LogisticClassifier(object):
         print('Test accuracy :', self.accuracy)
 
     def predict(self, output):
+        """Predicts label from output of classifier"""
         return output > 0.5
 
     def save(self):
+        """Save the weights of the model"""
         with open(r'config/weights' + self.label + '.p', "wb") as file:
             pickle.dump(self.weights, file)
 
     def load_weights(self):
+        """Load the weights of the model from saved file"""
         self.weights = pickle.load(open('config/weights' + self.label + '.p', 'rb'))
 
     def export_predictions(self):
+        """Custom prediction export into csv"""
         with open('prediction/submission.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
             for i in range(len(self.test_predictions)):
@@ -124,49 +158,55 @@ class LogisticClassifier(object):
 
 
 class EnsembleClassifiers(object):
+    """Ensemble of classifiers."""
+
     def __init__(self, config, x, y, num_classifiers, classifier, label='0'):
         self.train_data = x
         self.train_label = y
         self.config = config
+        # init classifiers
         self.classifiers = []
         for i in range(num_classifiers):
+            # if cross validation : apply k fold cross validation
             if config.mode == 'cv':
                 train_set, test_set = split_data_k_fold(x, y, i % 10, k=10)
                 self.classifiers.append(classifier(config, train_set, test_set))
             else:
-                # x, y = randomize_samples(x, y)
                 self.classifiers.append(
                     classifier(config, train_set=(self.train_data, self.train_label)))
-        self.classifier_weights = np.ones(num_classifiers)
         self.test_predictions = None
         self.label = label
 
     def __call__(self, data):
-        print(self.classifiers[0](data))
+        """Calculates the mean of the outputs of the classifiers"""
         output = np.zeros(np.shape(data)[0])
         for classifier in self.classifiers:
             output += 1 / len(self.classifiers) * classifier(data)
         return output
 
     def predict(self, output):
+        """Applies 0.5 treshold on output and tranforms 0 predictions to -1 and """
         y_pred = np.zeros(np.shape(output)[0])
         y_pred[np.where(output <= 0.5)] = -1
         y_pred[np.where(output > 0.5)] = 1
         return y_pred
 
     def train(self):
+        """Trains the ensemble and if cv mode test it"""
         for classifier in self.classifiers:
             classifier.train()
         if self.config.mode == 'cv':
             self.test()
 
     def test(self):
+        """test the ensemble on the cross validation set"""
         self.accuracy = 0
         for classifier in self.classifiers:
             self.accuracy += 1 / len(self.classifiers) * classifier.best_accuracy
         print('Test ensemble accuracy :', self.accuracy)
 
     def save(self):
+        """Save weights of all classifiers of the ensemble"""
         weights = np.zeros((len(self.classifiers), np.shape(self.train_data)[1]))
         for i, classifier in enumerate(self.classifiers):
             weights[i] = classifier.weights
@@ -174,14 +214,16 @@ class EnsembleClassifiers(object):
             pickle.dump(weights, file)
 
     def load_weights(self):
+        """Load ensemble weights"""
         with open(r'config/' + self.label + '.p', "rb") as file:
             weights = pickle.load(file)
-        print(np.shape(weights))
+
         for i, classifier in enumerate(self.classifiers):
             classifier.weights = weights[i]
 
 
 def find_best_regularizer(model_class, lambdas):
+    """Hyperparamenter search for regularization constant"""
     x, y = dataloader(mode='train', reduced=False)
     x = standardize(x)
     best_lambda = 0
