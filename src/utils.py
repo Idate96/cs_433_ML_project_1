@@ -23,17 +23,8 @@ def create_csv_submission(ids, y_pred, name):
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
-def xavier_init(size):
-    var = 2/(np.sum(size))
-    return var * np.random.randn(*size)
-
-def adam(theta, m, v, beta_1, beta_2, learning_rate,  gradient, iter_num):
-    m = (beta_1 * m + (1 - beta_1) * gradient)/(1-beta_1**iter_num)
-    v = (beta_2 * v + (1 - beta_2) * gradient**2)/(1-beta_2**iter_num)
-    return theta - learning_rate*m/(v**0.5 + 10**-8), m, v
-
-
 def dataloader(mode='train', reduced=False):
+    #TODO: erase the reduced feature since it is not used
     print("Loading data ...")
     file_name = 'dataset/' + mode + '.csv'
     with open(file_name) as f:
@@ -135,6 +126,3 @@ def build_polynomial(x):
     #
     base = np.hstack((bias[:, np.newaxis], np.log(abs(1+x)), x, base_mixed, x**2, x**3))
     return base
-
-if __name__ == '__main__':
-    pass

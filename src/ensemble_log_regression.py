@@ -10,7 +10,9 @@ sys.path.append(os.getcwd())
 
 
 class Config(object):
-    """Configuration object for the classifiers"""
+    """Configuration object for the classifiers
+    batch sixe, number of epochs (the amount of time the program goes through de dataset, learning rate is the step
+    of the gradient, the lambda and mode can be either cross-validation or test"""
 
     def __init__(self, batch_size, num_epochs, learning_rate, lambda_, mode='cv'):
         self.batch_size = batch_size
@@ -197,58 +199,3 @@ def find_best_regularizer(model_class, lambdas):
             best_accuracy = ensemble.accuracy
             best_lambda = lambda_
         print("best_lambda :", best_lambda)
-
-
-if __name__ == '__main__':
-    # find_best_regularizer(EnsembleClassifiers, np.logspace(-3, -2.5, 5))
-    x, y = dataloader(mode='train', reduced=False)
-    x_test = dataloader(mode='test', reduced=False)
-    x = standardize(x)
-    x_test = standardize(x_test)
-    # # # train_dataset, test_dataset = split_data(x, y, ratio=0.9)
-    # # # train_set = (build_polynomial(train_dataset[0]), train_dataset[1])
-    # # # test_set = (build_polynomial(test_dataset[0]), test_dataset[1])
-    # # # # x = dataloader(mode='test', reduced=False)
-    # # # # x = standardize(x)
-    # # # # x = build_polynomial(x)
-    config = Config(batch_size=200, num_epochs=200, learning_rate=5 * 10 ** -4,
-                    lambda_=0.00316227766017, mode='train')
-    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 1, LogisticClassifier,
-                                   label='ensemble_1_log')
-    ensemble.train()
-    ensemble.save()
-    # ensemble.load_weights()
-    predictions_test = ensemble.predict(ensemble(build_polynomial(x_test)))
-    create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions_test,
-                          'dataset/submission_04.csv')
-
-    predictions = ensemble.predict(ensemble(build_polynomial(x)))
-    y[np.where(y == 0)] = -1
-    accuracy = np.sum(predictions == y) / np.shape(x)[0]
-    print("final accuracy : ", accuracy)
-    # # print(predictions)
-    # create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions,
-    #                                                             'dataset/submission_01.csv')
-    # # y_test[np.where(y_test) == 0] = -1
-    #
-    # accuracy = np.sum(ensemble.predict(ensemble(build_polynomial(x))) == y)/np.shape(x)[0]
-    # print("accuracy loaded weighs", accuracy)
-
-
-
-    # model = LogisticClassifier(config, train_set, test_set)
-    # find_best_lambda(model)
-    # pred = ensemble(config, test_set=test_set, number=4)
-    # acc = accuracy(pred, test_set[1])
-    # print('accuracy ', acc)
-    # create_csv_submission(np.arange(350000, 350000 + x.shape[0]), pred, \
-    #                                                             '../dataset/submission_00.csv')
-
-    # log_classifier = LogisticClassifier(config, train_set, test_set, label='log_4')
-    # log_classifier.train()
-    # log_classifier.save()
-    # log_classifier.load_weights()
-    # log_classifier.test()
-    # ensemble = EnsembleClassifiers(config, train_set, test_set, 5, LogisticClassifier, "ensemble_0")
-    # ensemble.train()
-    best_lambda = .0133352143216
