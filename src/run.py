@@ -8,8 +8,8 @@ def main():
     x_test = dataloader(mode='test', reduced=False)
     x = standardize(x)
     x_test = standardize(x_test)
-    config = Config(batch_size=200, num_epochs=200, learning_rate=5 * 10 ** -4,
-                    lambda_=0.00316227766017,
+    config = Config(batch_size=120, num_epochs=300, learning_rate=5*10**-4,
+                    lambda_=2.15443469003e-05,
                     mode='train')
     ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 50, LogisticClassifier,
                                    label='ensemble_50_log')

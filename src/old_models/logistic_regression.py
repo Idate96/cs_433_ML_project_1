@@ -143,7 +143,7 @@ if __name__ == '__main__':
     # best_combination = find_best_lambda(loss_mse_reg, gradient_mse_reg)
     # plot(lambdas, train_losses, test_losses)
 
-    best_lambda = 0.0012742749857
+    best_lambda = 2.15443469003e-05
 
 
 
