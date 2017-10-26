@@ -11,7 +11,13 @@ sys.path.append(os.getcwd())
 
 
 class Config(object):
+<<<<<<< HEAD
+    """Configuration object for the classifiers
+    batch sixe, number of epochs (the amount of time the program goes through de dataset, learning rate is the step
+    of the gradient, the lambda and mode can be either cross-validation or test"""
+=======
     """Contains hyperparameters for the classifiers"""
+>>>>>>> 21a3636a014486ada42b979c3e94de1878fbe7b2
 
     def __init__(self, batch_size, num_epochs, learning_rate, lambda_, mode='cv'):
         self.batch_size = batch_size
