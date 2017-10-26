@@ -11,13 +11,9 @@ sys.path.append(os.getcwd())
 
 
 class Config(object):
-<<<<<<< HEAD
     """Configuration object for the classifiers
     batch sixe, number of epochs (the amount of time the program goes through de dataset, learning rate is the step
     of the gradient, the lambda and mode can be either cross-validation or test"""
-=======
-    """Contains hyperparameters for the classifiers"""
->>>>>>> 21a3636a014486ada42b979c3e94de1878fbe7b2
 
     def __init__(self, batch_size, num_epochs, learning_rate, lambda_, mode='cv'):
         self.batch_size = batch_size
@@ -173,7 +169,10 @@ class LogisticClassifier(object):
         x = np.arange(0, self.config.num_epochs)
         train_trend, = ax.plot(x, self.train_losses, label="Train loss")
         test_trend, = ax.plot(x, self.test_losses, label="Test loss")
-        ax.legend(loc='lower right')
+        # ax.legend(loc='lower right')
+        plt.xlabel('epoch')
+        plt.ylabel('loss')
+        plt.title('Loss history')
         plt.show()
 
     def plot_accuracy(self):
@@ -182,6 +181,9 @@ class LogisticClassifier(object):
         train_trend, = ax.plot(x, self.train_accuracies, label="Train accuracy")
         test_trend, = ax.plot(x, self.accuracies, label="Test accuracy")
         ax.legend(loc='lower right')
+        plt.xlabel('accuracy')
+        plt.ylabel('loss')
+        plt.title('Learning curves')
         plt.show()
 
 class EnsembleClassifiers(object):
@@ -340,15 +342,19 @@ if __name__ == '__main__':
     # print(x_test.shape)
     x = standardize(x)
     x_test = standardize(x_test)
-    # train_dataset, test_dataset = split_data(x, y, ratio=0.9)
+    train_dataset, test_dataset = split_data(x, y, ratio=0.9)
     # train_set = (build_polynomial(train_dataset[0]), train_dataset[1])
     # test_set = (build_polynomial(test_dataset[0]), test_dataset[1])
     # # # # x = dataloader(mode='test', reduced=False)
     # # # # x = standardize(x)
     # # # # x = build_polynomial(x)
-    config = Config(batch_size=120, num_epochs=300, learning_rate=5 * 10 ** -4,
+    config = Config(batch_size=120, num_epochs=10, learning_rate=5 * 10 ** -4,
                     lambda_=2.15443469003e-05, mode='train')
-    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 50, LogisticClassifier,
+    log_class = LogisticClassifier(config, (build_polynomial(x), y))
+    log_class.train(show_every=1)
+    log_class.plot_accuracy()
+    log_class.plot_convergence()
+    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 1, LogisticClassifier,
                                    label='ensemble_2_log')
 
     ensemble.train()
@@ -358,7 +364,7 @@ if __name__ == '__main__':
     # ensemble.load_weights()
     predictions_test = ensemble.predict(ensemble(build_polynomial(x_test)))
     create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions_test,
-                          'dataset/submission_06.csv')
+                          'dataset/submission_07.csv')
     #
     # predictions = ensemble.predict(ensemble(build_polynomial(x)))
     # y[np.where(y == 0)] = -1
