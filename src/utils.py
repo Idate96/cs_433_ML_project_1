@@ -24,11 +24,8 @@ def create_csv_submission(ids, y_pred, name):
             writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
 def dataloader(mode='train', reduced=False):
-<<<<<<< HEAD
-    #TODO: erase the reduced feature since it is not used
-=======
     """Load datasets"""
->>>>>>> 21a3636a014486ada42b979c3e94de1878fbe7b2
+
     print("Loading data ...")
     file_name = 'dataset/' + mode + '.csv'
     with open(file_name) as f:
