@@ -8,3 +8,12 @@ dataset/*
 src/old_models/
 config/
 .idea/
+src/albi_test.py
+src/helper.py
+src/__pycache__/ensemble_log_regression.cpython-36.pyc
+src/__pycache__/helper.cpython-36.pyc
+src/dataset/
+.idea/workspace.xml
+src/__pycache__/utils.cpython-36.pyc
+
+

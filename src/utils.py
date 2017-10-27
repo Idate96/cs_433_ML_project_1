@@ -1,3 +1,7 @@
+"""
+Contains helper function to process and load data
+"""
+
 import numpy as np
 import csv
 
