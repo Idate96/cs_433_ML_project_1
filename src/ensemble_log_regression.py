@@ -132,10 +132,13 @@ class LogisticClassifier(object):
         """Tests classifier on test set"""
         output = self(self.test_data)
         self.test_loss = self.loss(output, self.test_labels)
+        # record values
         self.test_losses.append(self.test_loss)
         self.test_predictions = self.predict(output)
+
         correct = np.sum(self.test_predictions == self.test_labels)
         self.accuracy = correct / np.shape(self.test_data)[0]
+        # record accuracy
         self.accuracies.append(self.accuracy)
         if self.accuracy > self.best_accuracy:
             self.best_accuracy = self.accuracy
@@ -144,8 +147,15 @@ class LogisticClassifier(object):
         print('Test accuracy :', self.accuracy)
 
     def predict(self, output):
-        """Predicts label from output of classifier"""
-        return output > 0.5
+        y_pred = output > 0.5
+        return y_pred
+
+    def predict_submission(self, output):
+        """Applies 0.5 treshold on output and tranforms 0 predictions to -1 and """
+        y_pred = np.zeros(np.shape(output)[0])
+        y_pred[np.where(output <= 0.5)] = -1
+        y_pred[np.where(output > 0.5)] = 1
+        return y_pred
 
     def save(self):
         """Save the weights of the model"""
@@ -169,7 +179,7 @@ class LogisticClassifier(object):
         x = np.arange(0, self.config.num_epochs)
         train_trend, = ax.plot(x, self.train_losses, label="Train loss")
         test_trend, = ax.plot(x, self.test_losses, label="Test loss")
-        # ax.legend(loc='lower right')
+        ax.legend(loc='upper right')
         plt.xlabel('epoch')
         plt.ylabel('loss')
         plt.title('Loss history')
@@ -178,11 +188,11 @@ class LogisticClassifier(object):
     def plot_accuracy(self):
         fig, ax = plt.subplots()
         x = np.arange(0, self.config.num_epochs)
-        train_trend, = ax.plot(x, self.train_accuracies, label="Train accuracy")
-        test_trend, = ax.plot(x, self.accuracies, label="Test accuracy")
+        train_trend, = ax.plot(x, self.train_accuracies, 'r--', label="Train accuracy")
+        test_trend, = ax.plot(x, self.accuracies, 'b-o', label="Test accuracy")
         ax.legend(loc='lower right')
-        plt.xlabel('accuracy')
-        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.ylabel('accuracy')
         plt.title('Learning curves')
         plt.show()
 
@@ -342,29 +352,30 @@ if __name__ == '__main__':
     # print(x_test.shape)
     x = standardize(x)
     x_test = standardize(x_test)
-    train_dataset, test_dataset = split_data(x, y, ratio=0.9)
+    # train_dataset, test_dataset = split_data(x, y, ratio=0.9)
     # train_set = (build_polynomial(train_dataset[0]), train_dataset[1])
     # test_set = (build_polynomial(test_dataset[0]), test_dataset[1])
     # # # # x = dataloader(mode='test', reduced=False)
     # # # # x = standardize(x)
     # # # # x = build_polynomial(x)
-    config = Config(batch_size=120, num_epochs=10, learning_rate=5 * 10 ** -4,
+    config = Config(batch_size=120, num_epochs=400, learning_rate=5 * 10 ** -4,
                     lambda_=2.15443469003e-05, mode='train')
     log_class = LogisticClassifier(config, (build_polynomial(x), y))
-    log_class.train(show_every=1)
+    log_class.train(show_every=1p)
+    predictions_test = log_class.predict_submission(log_class(build_polynomial(x_test)))
     log_class.plot_accuracy()
     log_class.plot_convergence()
-    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 1, LogisticClassifier,
+    ensemble = EnsembleClassifiers(config, build_polynomial(x), y, 5, LogisticClassifier,
                                    label='ensemble_2_log')
-
+    #
     ensemble.train()
     # ensemble.plot_convergence()
     # ensemble.plot_accuracy()
-    ensemble.save()
-    # ensemble.load_weights()
+    # ensemble.save()
+    # # ensemble.load_weights()
     predictions_test = ensemble.predict(ensemble(build_polynomial(x_test)))
     create_csv_submission(np.arange(350000, 350000 + x_test.shape[0]), predictions_test,
-                          'dataset/submission_07.csv')
+                          'dataset/submission_10.csv')
     #
     # predictions = ensemble.predict(ensemble(build_polynomial(x)))
     # y[np.where(y == 0)] = -1

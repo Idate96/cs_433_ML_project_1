@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+np.random.seed(seed=3)
 
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""

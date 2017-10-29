@@ -1,9 +1,9 @@
 import numpy as np
-from src.utils import batch_iter, dataloader, split_data, standardize, xavier_init, adam
+from src.utils import batch_iter, dataloader, split_data, standardize
 import matplotlib.pyplot as plt
 num_epochs = 300
 batch_size = 300
-learning_rate = 10**-4
+learning_rate = 10**-3
 
 x, y = dataloader(mode='train', reduced=False)
 x = standardize(x)
@@ -72,15 +72,15 @@ def train_logistic_regression(loss_func, grad_func, lambda_ = 10**-3, show_every
     iter_num = 1
     m, v = 0, 0
     # m, v = 0, 0
-    poly_train_data = build_polynomial(train_data)
-    weights = xavier_init(np.shape(poly_train_data[1]))
+    poly_train_data = (train_data)
+    weights = np.zeros((np.shape(poly_train_data[1])))
     # weights = np.zeros(np.shape(poly_train_data)[1])
     for epoch in range(num_epochs):
         if epoch % 90 == 0:
             learning_rate *= 0.5
         for batch_label, batch_input in batch_iter(
                 train_target, train_data, batch_size, num_batches=num_batches):
-            batch_input = build_polynomial(batch_input)
+            batch_input = (batch_input)
             grad = grad_func(weights, batch_input, batch_label, lambda_)
             # weights, m, v = adam(weights, m, v, 0.9, 0.999, learning_rate, grad, iter_num)
             weights -= learning_rate*grad
@@ -94,7 +94,7 @@ def train_logistic_regression(loss_func, grad_func, lambda_ = 10**-3, show_every
     return weights, accuracy, train_loss, test_loss
 
 def test_logistic_regression(weights, loss_func, lambda_):
-    poly_test_data = build_polynomial(test_data)
+    poly_test_data = (test_data)
     loss = loss_func(weights, poly_test_data, test_target, lambda_)
     output = sigmoid(poly_test_data @ weights)
     predicted = output > 0.5
@@ -138,7 +138,7 @@ def plot(x, train_loss, test_loss):
 
 
 if __name__ == '__main__':
-    # train_logistic_regression(loss_ce, gradient_ce, lambda_= 0.01)
+    train_logistic_regression(loss_ce, gradient_ce, lambda_= 0.01)
     # lambdas, best_weigths, best_accurary, test_losses, train_losses, \
     # best_combination = find_best_lambda(loss_mse_reg, gradient_mse_reg)
     # plot(lambdas, train_losses, test_losses)
