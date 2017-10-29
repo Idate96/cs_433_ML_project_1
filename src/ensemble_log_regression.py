@@ -1,3 +1,6 @@
+"""
+Contains the Config object, LogisticClassifier object and EnsembleClassifiers object
+"""
 import sys
 import os
 import matplotlib.pyplot as plt
@@ -12,7 +15,7 @@ sys.path.append(os.getcwd())
 
 class Config(object):
     """Configuration object for the classifiers
-    batch sixe, number of epochs (the amount of time the program goes through de dataset, learning rate is the step
+    batch size, number of epochs (the amount of time the program goes through de dataset, learning rate is the step
     of the gradient, the lambda and mode can be either cross-validation or test"""
 
     def __init__(self, batch_size, num_epochs, learning_rate, lambda_, mode='cv'):
